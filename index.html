@@ -1,0 +1,54 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Estação</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <main id="jogo">
+        <audio id="musica-fundo" src="assets/musica.mp3" loop></audio>
+
+        <section id="menu" class="tela">
+            <div class="menu-conteudo">
+                <h1>ESTAÇÃO</h1>
+                <p class="subtitulo">Você não deveria estar aqui.</p>
+
+                <div class="botoes-menu">
+                    <button id="novo-jogo">NOVO JOGO</button>
+                    <button id="memorias">MEMÓRIAS</button>
+                    <button id="sair">SAIR</button>
+                </div>
+
+                <p class="rodape">Uma visual novel psicológica</p>
+            </div>
+        </section>
+
+        <section id="cenario" class="tela escondido">
+            <div id="dialogo">
+                <p id="nome"></p>
+                <p id="texto"></p>
+                <div id="escolhas"></div>
+                <button id="continuar">Continuar ▸</button>
+                <button id="voltar-menu">Voltar ao menu</button>
+            </div>
+        </section>
+
+        <section id="tela-memorias" class="tela escondido">
+            <div class="memorias-conteudo">
+                <h2>MEMÓRIAS</h2>
+                <p id="mensagem-memorias">
+                    Você ainda não se lembra de nada.
+                </p>
+                <button id="voltar-memorias">VOLTAR</button>
+            </div>
+        </section>
+
+    </main>
+
+    <script src="GameCD.JS"></script>
+</body>
+</html>
