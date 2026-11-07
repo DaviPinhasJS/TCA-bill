@@ -1,0 +1,346 @@
+
+import readline from "readline/promises"
+
+import { Jogo, Jogos, SalvarJogos, BuscarJogo } from "./Jogos.JS"
+
+import { Usuario, Usuarios, SalvarUsuarios } from "./Usuario.JS"
+
+function VerificarAlugueis(DiasAviso = 3) {
+
+    let Hoje = new Date()
+
+    Hoje.setHours(0, 0, 0, 0)
+
+    let i = 0
+
+    while (i < Usuarios.length) {
+
+        let j = 0
+
+        while (j < Usuarios[i].JogosAlugados.length) {
+
+            let aluguel = Usuarios[i].JogosAlugados[j]
+
+            let dias = Math.floor((aluguel.Entrega - Hoje) / 86400000)
+
+            if (dias < 0) {
+
+                console.log(`${Usuarios[i].Nome} está ${-dias} dia${-dias == 1 ? "" : "s"} atrasado para devolver "${aluguel.Jogo}"`)
+
+            } else if (dias == 0) {
+
+                console.log(`${Usuarios[i].Nome} deve devolver "${aluguel.Jogo}" hoje`)
+
+            } else if (dias <= DiasAviso) {
+
+                console.log(`Faltam ${dias} dia${dias == 1 ? "" : "s"} para ${Usuarios[i].Nome} devolver "${aluguel.Jogo}"`)
+
+            }
+
+            j++
+
+        }
+
+        i++
+
+    }
+
+}
+
+VerificarAlugueis()
+
+// procura o usuário pelo nome, sem ligar para maiúsculas e minúsculas
+
+function BuscarUsuario(Nome) {
+
+    let i = 0
+
+    while (i < Usuarios.length) {
+
+        if (Usuarios[i].Nome.toLowerCase() == Nome.toLowerCase()) return Usuarios[i]
+
+        i++
+
+    }
+
+    return null
+
+}
+
+// transforma "dd/mm/aaaa" em Date, ou devolve null se a data for inválida
+
+function LerData(Texto) {
+
+    let partes = Texto.split("/")
+
+    if (partes.length != 3) return null
+
+    let dia = Number(partes[0])
+
+    let mes = Number(partes[1])
+
+    let ano = Number(partes[2])
+
+    if (!Number.isInteger(dia) || !Number.isInteger(mes) || !Number.isInteger(ano)) return null
+
+    let data = new Date(ano, mes - 1, dia)
+
+    // o Date aceita 31/02 e vira 03/03, então confere se a data continua igual
+
+    if (data.getDate() != dia || data.getMonth() != mes - 1 || data.getFullYear() != ano) return null
+
+    return data
+
+}
+
+function CriarUsuario(Nome, Dia, Mes, Ano) {
+
+    if (BuscarUsuario(Nome) != null) return `Já existe um usuário chamado ${Nome}`
+
+    let usuario = new Usuario(Nome, Dia, Mes, Ano)
+
+    if (usuario.Nascimento > new Date()) return "A data de nascimento não pode ser no futuro"
+
+    Usuarios.push(usuario)
+
+    SalvarUsuarios()
+
+    return `Usuário ${Nome} criado`
+
+}
+
+function CriarJogo(Nome, Generos, Ano, Plataformas, Desenvolvedora, ModoDeJogo) {
+
+    if (BuscarJogo(Nome) != null) return `Já existe um jogo chamado "${Nome}"`
+
+    let jogo = new Jogo(Nome, Generos, Ano, Plataformas, Desenvolvedora, ModoDeJogo)
+
+    Jogos.push(jogo)
+
+    SalvarJogos()
+
+    return `Jogo "${Nome}" cadastrado`
+
+}
+
+function Devolver(NomeJogo, NomeUsuario) {
+
+    let usuario = BuscarUsuario(NomeUsuario)
+
+    if (usuario == null) return "Usuário não encontrado"
+
+    return usuario.Devolver(NomeJogo)
+
+}
+
+let rl = readline.createInterface({ input: process.stdin, output: process.stdout })
+
+// faz a pergunta e tira os espaços sobrando do começo e do fim
+
+async function Perguntar(Texto) {
+
+    return (await rl.question(Texto)).trim()
+
+}
+
+let rodando = true
+
+while (rodando) {
+
+    console.log("\n===== Catálogo de Jogos =====")
+
+    console.log("1 - Listar jogos")
+
+    console.log("2 - Listar usuários")
+
+    console.log("3 - Adicionar jogo à coleção")
+
+    console.log("4 - Alugar jogo")
+
+    console.log("5 - Devolver jogo")
+
+    console.log("6 - Adicionar usuário")
+
+    console.log("7 - Adicionar jogo")
+
+    console.log("0 - Sair")
+
+    let opcao = await Perguntar("Escolha: ")
+
+    if (opcao == "1") {
+
+        if (Jogos.length == 0) console.log("Nenhum jogo cadastrado")
+
+        let i = 0
+
+        while (i < Jogos.length) {
+
+            let j = Jogos[i]
+
+            console.log(`\n${j.Nome}`)
+
+            console.log(`  Desenvolvedora: ${j.Desenvolvedora}`)
+
+            console.log(`  Ano: ${j.Ano}`)
+
+            console.log(`  Gêneros: ${j.Generos}`)
+
+            console.log(`  Plataformas: ${j.Plataformas}`)
+
+            console.log(`  Modo de jogo: ${j.ModoDeJogo}`)
+
+            i++
+
+        }
+
+    } else if (opcao == "2") {
+
+        if (Usuarios.length == 0) console.log("Nenhum usuário cadastrado")
+
+        let i = 0
+
+        while (i < Usuarios.length) {
+
+            let u = Usuarios[i]
+
+            console.log(`\n${u.Nome} (${u.Idade} anos)`)
+
+            console.log(`  Coleção: ${u.JogosNaColecao.length > 0 ? u.JogosNaColecao.join(", ") : "nenhum jogo"}`)
+
+            if (u.JogosAlugados.length == 0) {
+
+                console.log("  Jogos alugados: nenhum")
+
+            } else {
+
+                console.log("  Jogos alugados:")
+
+                let j = 0
+
+                while (j < u.JogosAlugados.length) {
+
+                    console.log(`    ${u.JogosAlugados[j].Jogo} - entrega ${u.JogosAlugados[j].Entrega.toLocaleDateString("pt-BR")}`)
+
+                    j++
+
+                }
+
+            }
+
+            i++
+
+        }
+
+    } else if (opcao == "3") {
+
+        let usuario = BuscarUsuario(await Perguntar("Seu nome: "))
+
+        if (usuario == null) {
+
+            console.log("Usuário não encontrado")
+
+        } else {
+
+            console.log(usuario.AdicionarJogo(await Perguntar("Nome do jogo: ")))
+
+        }
+
+    } else if (opcao == "4") {
+
+        let usuario = BuscarUsuario(await Perguntar("Seu nome: "))
+
+        if (usuario == null) {
+
+            console.log("Usuário não encontrado")
+
+        } else {
+
+            let nomeJogo = await Perguntar("Nome do jogo: ")
+
+            let entrega = LerData(await Perguntar("Data de devolução (dd/mm/aaaa): "))
+
+            if (entrega == null) {
+
+                console.log("Data inválida, use o formato dd/mm/aaaa")
+
+            } else {
+
+                console.log(usuario.Alugar(nomeJogo, entrega.getDate(), entrega.getMonth() + 1, entrega.getFullYear()))
+
+            }
+
+        }
+
+    } else if (opcao == "5") {
+
+        let nome = await Perguntar("Seu nome: ")
+
+        let nomeJogo = await Perguntar("Nome do jogo: ")
+
+        console.log(Devolver(nomeJogo, nome))
+
+    } else if (opcao == "6") {
+
+        let nome = await Perguntar("Nome: ")
+
+        if (nome == "") {
+
+            console.log("O nome não pode ficar vazio")
+
+        } else {
+
+            let nasc = LerData(await Perguntar("Data de nascimento (dd/mm/aaaa): "))
+
+            if (nasc == null) {
+
+                console.log("Data inválida, use o formato dd/mm/aaaa")
+
+            } else {
+
+                console.log(CriarUsuario(nome, nasc.getDate(), nasc.getMonth() + 1, nasc.getFullYear()))
+
+            }
+
+        }
+
+    } else if (opcao == "7") {
+
+        let nome = await Perguntar("Nome do jogo: ")
+
+        let generos = await Perguntar("Gêneros: ")
+
+        let ano = await Perguntar("Ano de lançamento: ")
+
+        let plataformas = await Perguntar("Plataformas: ")
+
+        let desenvolvedora = await Perguntar("Desenvolvedora: ")
+
+        let modoDeJogo = await Perguntar("Modo de jogo (Single-player, Multiplayer, Coop etc.): ")
+
+        if (nome == "" || generos == "" || plataformas == "" || desenvolvedora == "" || modoDeJogo == "") {
+
+            console.log("Nenhum campo pode ficar vazio")
+
+        } else if (ano == "" || !Number.isInteger(Number(ano)) || Number(ano) < 1950 || Number(ano) > new Date().getFullYear()) {
+
+            console.log("Ano de lançamento inválido")
+
+        } else {
+
+            console.log(CriarJogo(nome, generos, Number(ano), plataformas, desenvolvedora, modoDeJogo))
+
+        }
+
+    } else if (opcao == "0") {
+
+        rodando = false
+
+    } else {
+
+        console.log("Opção inválida, escolha um número de 0 a 7")
+
+    }
+
+}
+
+rl.close()
