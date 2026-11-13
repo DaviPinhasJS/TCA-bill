@@ -1,0 +1,50 @@
+[
+  {
+    "Nome": "Hollow Knight",
+    "Generos": "Metroidvania, Aventura, Indie",
+    "Ano": 2017,
+    "Plataformas": "Xbox One, PS4, Nintendo Switch, PC, Mac, Linux",
+    "Desenvolvedora": "Team Cherry",
+    "ModoDeJogo": "Single-player"
+  },
+  {
+    "Nome": "Hollow Knight: Silksong",
+    "Generos": "Metroidvania, Aventura, Indie",
+    "Ano": 2025,
+    "Plataformas": "Xbox One, Xbox Series X|S, PS5, Nintendo Switch, Nintendo Switch 2, PC, Mac, Linux",
+    "Desenvolvedora": "Team Cherry",
+    "ModoDeJogo": "Single-player"
+  },
+  {
+    "Nome": "Termo do Jacó",
+    "Generos": "Jogo Mental",
+    "Ano": 2026,
+    "Plataformas": "Web",
+    "Desenvolvedora": "Davi J.",
+    "ModoDeJogo": "Single-player"
+  },
+  {
+    "Nome": "Red Dead Redemption 2",
+    "Generos": "Tiro, Aventura, RPG",
+    "Ano": 2018,
+    "Plataformas": "Xbox One, PS4, PC",
+    "Desenvolvedora": "Rockstar Games",
+    "ModoDeJogo": "Single-player"
+  },
+  {
+    "Nome": "Far Cry 3",
+    "Generos": "Tiro, Aventura",
+    "Ano": 2012,
+    "Plataformas": "Xbox 360, PS3, PC",
+    "Desenvolvedora": "Ubisoft",
+    "ModoDeJogo": "Single-player, Multiplayer, Coop"
+  },
+  {
+    "Nome": "Sekiro: Shadows Die Twice",
+    "Generos": "Ação, Soulslike, Hack and Slash",
+    "Ano": 2019,
+    "Plataformas": "Xbox One, PS4, PC",
+    "Desenvolvedora": "FromSoftware",
+    "ModoDeJogo": "Single-player"
+  }
+]
