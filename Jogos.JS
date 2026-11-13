@@ -19,7 +19,6 @@ class repo {
             new jogos(`Red dead redemption 2`, `Tiro, Aventura, RPG`, `2018`, `Xbox one, PS4, Pc(Windows)`, `Rockstar Games`, `Single Player`),
             new jogos(`Far Cry 3`, `Tiro, Aventura`, `2012`, `Xbox 360, PS3, Pc(Windows)`, `Ubisoft`, `Single Player, Multiplayer, Coop`),
             new jogos(`Sekiro: Shadows Die Twice`, `Hack'n slash`, `2019`, `Xbox one, PS4, Pc(Windows)`, `FromSoftware`, `Single Player`),
-            new jogos(`Far Cry 3`, `Tiro, Aventura`, `2012`, `Xbox 360, PS3, Pc(Windows)`, `Ubisoft`, `Single Player, Multiplayer, Coop`),
         ]
    
         }
