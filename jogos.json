@@ -46,5 +46,13 @@
     "Plataformas": "Xbox One, PS4, PC",
     "Desenvolvedora": "FromSoftware",
     "ModoDeJogo": "Single-player"
+  },
+  {
+    "Nome": "Doki Doki Literature Club",
+    "Generos": "visual novel, terror psicológico",
+    "Ano": 2017,
+    "Plataformas": "windows, mac, linux",
+    "Desenvolvedora": "team salvato",
+    "ModoDeJogo": "single-player"
   }
 ]
