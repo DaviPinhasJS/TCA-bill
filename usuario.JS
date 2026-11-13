@@ -164,19 +164,7 @@ if (fs.existsSync("usuarios.json")) {
 
 } else {
 
-    Usuarios = [
-
-        new Usuario("Lucas", 12, 5, 2015),
-
-        new Usuario("Ana", 3, 11, 2011),
-
-        new Usuario("Pedro", 25, 8, 2009),
-
-        new Usuario("Mariana", 7, 2, 2001),
-
-        new Usuario("Carlos", 30, 12, 1980)
-
-    ]
+    Usuarios = []
 
     SalvarUsuarios()
 
