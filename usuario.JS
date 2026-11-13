@@ -1,4 +1,3 @@
-
 import fs from "fs"
 
 import { BuscarJogo } from "./Jogos.JS"
@@ -12,8 +11,6 @@ class Usuario {
         this.Nascimento = new Date(Ano, Mes - 1, Dia)
 
         this.JogosNaColecao = []
-
-        this.JogosAlugados = []
 
     }
 
@@ -34,29 +31,17 @@ class Usuario {
 
     }
 
-    // verifica se o jogo existe
-
-    PodeAdicionar(jogo) {
-
-        if (jogo == null) return "Jogo não encontrado"
-
-        return ""
-
-    }
-
     AdicionarJogo(NomeJogo) {
 
         let jogo = BuscarJogo(NomeJogo)
 
-        let erro = this.PodeAdicionar(jogo)
-
-        if (erro != "") return erro
+        if (jogo == null) return "Jogo não encontrado"
 
         let i = 0
 
         while (i < this.JogosNaColecao.length) {
 
-            if (this.JogosNaColecao[i].toLowerCase() == jogo.Nome.toLowerCase()) {
+            if (this.JogosNaColecao[i].Jogo.toLowerCase() == jogo.Nome.toLowerCase()) {
 
                 return `${this.Nome} já possui "${jogo.Nome}" na coleção`
 
@@ -66,7 +51,15 @@ class Usuario {
 
         }
 
-        this.JogosNaColecao.push(jogo.Nome)
+        this.JogosNaColecao.push({
+
+            Jogo: jogo.Nome,
+
+            Nota: null,
+
+            Avaliacao: ""
+
+        })
 
         SalvarUsuarios()
 
@@ -74,65 +67,23 @@ class Usuario {
 
     }
 
-    Alugar(NomeJogo, DiaEntrega, MesEntrega, AnoEntrega) {
-
-        let jogo = BuscarJogo(NomeJogo)
-
-        let erro = this.PodeAdicionar(jogo)
-
-        if (erro != "") return erro
+    AvaliarJogo(NomeJogo, Nota, Avaliacao) {
 
         let i = 0
 
-        while (i < this.JogosAlugados.length) {
+        while (i < this.JogosNaColecao.length) {
 
-            if (this.JogosAlugados[i].Jogo.toLowerCase() == jogo.Nome.toLowerCase()) {
+            let jogo = this.JogosNaColecao[i]
 
-                return `${this.Nome} já está com "${jogo.Nome}" alugado`
+            if (jogo.Jogo.toLowerCase() == NomeJogo.toLowerCase()) {
 
-            }
+                jogo.Nota = Nota
 
-            i++
-
-        }
-
-        let Hoje = new Date()
-
-        Hoje.setHours(0, 0, 0, 0)
-
-        let Entrega = new Date(AnoEntrega, MesEntrega - 1, DiaEntrega)
-
-        if (Entrega < Hoje) return "A data de entrega não pode ser antes de hoje"
-
-        this.JogosAlugados.push({
-
-            Jogo: jogo.Nome,
-
-            Entrega: Entrega
-
-        })
-
-        SalvarUsuarios()
-
-        return `Aluguel feito: "${jogo.Nome}", entregar até ${Entrega.toLocaleDateString("pt-BR")}`
-
-    }
-
-    Devolver(NomeJogo) {
-
-        let i = 0
-
-        while (i < this.JogosAlugados.length) {
-
-            if (this.JogosAlugados[i].Jogo.toLowerCase() == NomeJogo.toLowerCase()) {
-
-                let nome = this.JogosAlugados[i].Jogo
-
-                this.JogosAlugados.splice(i, 1)
+                jogo.Avaliacao = Avaliacao
 
                 SalvarUsuarios()
 
-                return `"${nome}" devolvido`
+                return `Avaliação de "${jogo.Jogo}" salva com sucesso`
 
             }
 
@@ -140,7 +91,7 @@ class Usuario {
 
         }
 
-        return `${this.Nome} não está com "${NomeJogo}" alugado`
+        return `${this.Nome} não possui "${NomeJogo}" na coleção`
 
     }
 
@@ -149,8 +100,6 @@ class Usuario {
 let Usuarios = []
 
 if (fs.existsSync("usuarios.json")) {
-
-    // as datas voltam do JSON como texto, então converte de volta para Date
 
     let dados = JSON.parse(fs.readFileSync("usuarios.json", "utf-8"))
 
@@ -169,23 +118,39 @@ if (fs.existsSync("usuarios.json")) {
             nasc.getFullYear()
         )
 
-        // permite aproveitar os dados antigos, caso existam
+        // Converte coleções antigas para o novo formato
 
-        usuario.JogosNaColecao = u.JogosNaColecao || u.LivrosComprados || []
+        let colecao = u.JogosNaColecao || u.LivrosComprados || []
 
         let j = 0
 
-        let alugados = u.JogosAlugados || u.LivrosAlugados || []
+        while (j < colecao.length) {
 
-        while (j < alugados.length) {
+            if (typeof colecao[j] == "string") {
 
-            usuario.JogosAlugados.push({
+                usuario.JogosNaColecao.push({
 
-                Jogo: alugados[j].Jogo || alugados[j].Livro,
+                    Jogo: colecao[j],
 
-                Entrega: new Date(alugados[j].Entrega)
+                    Nota: null,
 
-            })
+                    Avaliacao: ""
+
+                })
+
+            } else {
+
+                usuario.JogosNaColecao.push({
+
+                    Jogo: colecao[j].Jogo,
+
+                    Nota: colecao[j].Nota ?? null,
+
+                    Avaliacao: colecao[j].Avaliacao || ""
+
+                })
+
+            }
 
             j++
 
@@ -198,8 +163,6 @@ if (fs.existsSync("usuarios.json")) {
     }
 
 } else {
-
-    // lista padrão, usada só quando o usuarios.json ainda não existe
 
     Usuarios = [
 

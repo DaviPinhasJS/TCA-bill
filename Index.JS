@@ -1,53 +1,8 @@
-
 import readline from "readline/promises"
 
 import { Jogo, Jogos, SalvarJogos, BuscarJogo } from "./Jogos.JS"
 
 import { Usuario, Usuarios, SalvarUsuarios } from "./Usuario.JS"
-
-function VerificarAlugueis(DiasAviso = 3) {
-
-    let Hoje = new Date()
-
-    Hoje.setHours(0, 0, 0, 0)
-
-    let i = 0
-
-    while (i < Usuarios.length) {
-
-        let j = 0
-
-        while (j < Usuarios[i].JogosAlugados.length) {
-
-            let aluguel = Usuarios[i].JogosAlugados[j]
-
-            let dias = Math.floor((aluguel.Entrega - Hoje) / 86400000)
-
-            if (dias < 0) {
-
-                console.log(`${Usuarios[i].Nome} está ${-dias} dia${-dias == 1 ? "" : "s"} atrasado para devolver "${aluguel.Jogo}"`)
-
-            } else if (dias == 0) {
-
-                console.log(`${Usuarios[i].Nome} deve devolver "${aluguel.Jogo}" hoje`)
-
-            } else if (dias <= DiasAviso) {
-
-                console.log(`Faltam ${dias} dia${dias == 1 ? "" : "s"} para ${Usuarios[i].Nome} devolver "${aluguel.Jogo}"`)
-
-            }
-
-            j++
-
-        }
-
-        i++
-
-    }
-
-}
-
-VerificarAlugueis()
 
 // procura o usuário pelo nome, sem ligar para maiúsculas e minúsculas
 
@@ -85,8 +40,6 @@ function LerData(Texto) {
 
     let data = new Date(ano, mes - 1, dia)
 
-    // o Date aceita 31/02 e vira 03/03, então confere se a data continua igual
-
     if (data.getDate() != dia || data.getMonth() != mes - 1 || data.getFullYear() != ano) return null
 
     return data
@@ -123,16 +76,6 @@ function CriarJogo(Nome, Generos, Ano, Plataformas, Desenvolvedora, ModoDeJogo) 
 
 }
 
-function Devolver(NomeJogo, NomeUsuario) {
-
-    let usuario = BuscarUsuario(NomeUsuario)
-
-    if (usuario == null) return "Usuário não encontrado"
-
-    return usuario.Devolver(NomeJogo)
-
-}
-
 let rl = readline.createInterface({ input: process.stdin, output: process.stdout })
 
 // faz a pergunta e tira os espaços sobrando do começo e do fim
@@ -155,13 +98,11 @@ while (rodando) {
 
     console.log("3 - Adicionar jogo à coleção")
 
-    console.log("4 - Alugar jogo")
+    console.log("4 - Avaliar jogo")
 
-    console.log("5 - Devolver jogo")
+    console.log("5 - Adicionar usuário")
 
-    console.log("6 - Adicionar usuário")
-
-    console.log("7 - Adicionar jogo")
+    console.log("6 - Adicionar jogo ao catálogo")
 
     console.log("0 - Sair")
 
@@ -205,21 +146,25 @@ while (rodando) {
 
             console.log(`\n${u.Nome} (${u.Idade} anos)`)
 
-            console.log(`  Coleção: ${u.JogosNaColecao.length > 0 ? u.JogosNaColecao.join(", ") : "nenhum jogo"}`)
+            if (u.JogosNaColecao.length == 0) {
 
-            if (u.JogosAlugados.length == 0) {
-
-                console.log("  Jogos alugados: nenhum")
+                console.log("  Coleção: nenhum jogo")
 
             } else {
 
-                console.log("  Jogos alugados:")
+                console.log("  Coleção:")
 
                 let j = 0
 
-                while (j < u.JogosAlugados.length) {
+                while (j < u.JogosNaColecao.length) {
 
-                    console.log(`    ${u.JogosAlugados[j].Jogo} - entrega ${u.JogosAlugados[j].Entrega.toLocaleDateString("pt-BR")}`)
+                    let jogo = u.JogosNaColecao[j]
+
+                    console.log(`    ${jogo.Jogo}`)
+
+                    console.log(`      Nota: ${jogo.Nota == null ? "Não avaliado" : jogo.Nota + "/10"}`)
+
+                    console.log(`      Avaliação: ${jogo.Avaliacao == "" ? "Nenhuma avaliação escrita" : jogo.Avaliacao}`)
 
                     j++
 
@@ -257,29 +202,25 @@ while (rodando) {
 
             let nomeJogo = await Perguntar("Nome do jogo: ")
 
-            let entrega = LerData(await Perguntar("Data de devolução (dd/mm/aaaa): "))
+            let notaTexto = await Perguntar("Nota de 0 a 10: ")
 
-            if (entrega == null) {
+            let nota = Number(notaTexto.replace(",", "."))
 
-                console.log("Data inválida, use o formato dd/mm/aaaa")
+            if (notaTexto == "" || !Number.isFinite(nota) || nota < 0 || nota > 10) {
+
+                console.log("Nota inválida. Digite um número de 0 a 10")
 
             } else {
 
-                console.log(usuario.Alugar(nomeJogo, entrega.getDate(), entrega.getMonth() + 1, entrega.getFullYear()))
+                let avaliacao = await Perguntar("Escreva sua avaliação: ")
+
+                console.log(usuario.AvaliarJogo(nomeJogo, nota, avaliacao))
 
             }
 
         }
 
     } else if (opcao == "5") {
-
-        let nome = await Perguntar("Seu nome: ")
-
-        let nomeJogo = await Perguntar("Nome do jogo: ")
-
-        console.log(Devolver(nomeJogo, nome))
-
-    } else if (opcao == "6") {
 
         let nome = await Perguntar("Nome: ")
 
@@ -303,7 +244,7 @@ while (rodando) {
 
         }
 
-    } else if (opcao == "7") {
+    } else if (opcao == "6") {
 
         let nome = await Perguntar("Nome do jogo: ")
 
@@ -337,7 +278,7 @@ while (rodando) {
 
     } else {
 
-        console.log("Opção inválida, escolha um número de 0 a 7")
+        console.log("Opção inválida, escolha um número de 0 a 6")
 
     }
 
