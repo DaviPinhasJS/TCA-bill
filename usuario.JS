@@ -1,6 +1,6 @@
 import fs from "fs"
 
-import { BuscarJogo } from "./Jogos.JS"
+import { BuscarJogo } from "./Jogos.js"
 
 class Usuario {
 

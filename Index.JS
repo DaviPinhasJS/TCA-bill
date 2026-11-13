@@ -1,8 +1,8 @@
 import readline from "readline/promises"
 
-import { Jogo, Jogos, SalvarJogos, BuscarJogo } from "./Jogos.JS"
+import { Jogo, Jogos, SalvarJogos, BuscarJogo } from "./Jogos.js"
 
-import { Usuario, Usuarios, SalvarUsuarios } from "./Usuario.JS"
+import { Usuario, Usuarios, SalvarUsuarios } from "./usuario.js"
 
 // procura o usuário pelo nome, sem ligar para maiúsculas e minúsculas
 
